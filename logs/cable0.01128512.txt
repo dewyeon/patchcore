@@ -1,7 +1,0 @@
-Training: 0it [00:00, ?it/s]Training:   0%|          | 0/7 [00:00<?, ?it/s]Epoch 0:   0%|          | 0/7 [00:00<?, ?it/s] Epoch 0:  14%|█▍        | 1/7 [00:20<02:05, 20.97s/it]Epoch 0:  14%|█▍        | 1/7 [00:20<02:05, 20.98s/it, loss=nan, v_num=0]Epoch 0:  29%|██▊       | 2/7 [00:31<01:18, 15.60s/it, loss=nan, v_num=0]Epoch 0:  29%|██▊       | 2/7 [00:31<01:18, 15.60s/it, loss=nan, v_num=0]Epoch 0:  43%|████▎     | 3/7 [00:41<00:54, 13.69s/it, loss=nan, v_num=0]Epoch 0:  43%|████▎     | 3/7 [00:41<00:54, 13.69s/it, loss=nan, v_num=0]Epoch 0:  57%|█████▋    | 4/7 [00:51<00:38, 12.85s/it, loss=nan, v_num=0]Epoch 0:  57%|█████▋    | 4/7 [00:51<00:38, 12.85s/it, loss=nan, v_num=0]Epoch 0:  71%|███████▏  | 5/7 [01:01<00:24, 12.39s/it, loss=nan, v_num=0]Epoch 0:  71%|███████▏  | 5/7 [01:01<00:24, 12.39s/it, loss=nan, v_num=0]Epoch 0:  86%|████████▌ | 6/7 [01:12<00:12, 12.03s/it, loss=nan, v_num=0]Epoch 0:  86%|████████▌ | 6/7 [01:12<00:12, 12.03s/it, loss=nan, v_num=0]Epoch 0: 100%|██████████| 7/7 [01:12<00:00, 10.36s/it, loss=nan, v_num=0]Epoch 0: 100%|██████████| 7/7 [01:12<00:00, 10.36s/it, loss=nan, v_num=0]Getting transformed features...
-Calculating distances...
-Maximum distance from cluster centers is 2.87
-initial embedding size :  (57344, 1536)
-final embedding size :  (573, 1536)
-Epoch 0: 100%|██████████| 7/7 [02:08<00:00, 18.35s/it, loss=nan, v_num=0]
-Testing: 0it [00:00, ?it/s]Testing:   0%|          | 0/150 [00:06<?, ?it/s]

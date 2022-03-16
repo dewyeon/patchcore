@@ -105,7 +105,7 @@ def copy_files(src, dst, ignores=[]):
 def prep_dirs(root):
     # make embeddings dir
     # embeddings_path = os.path.join(root, 'embeddings')
-    embeddings_path = os.path.join('./', 'embeddings', args.category)
+    embeddings_path = os.path.join('./', 'embeddings', args.category, str(args.coreset_sampling_ratio), str(args.batch_size), str(args.input_size), str(args.load_size))
     os.makedirs(embeddings_path, exist_ok=True)
     # make sample dir
     sample_path = os.path.join(root, 'sample')
@@ -416,24 +416,25 @@ class STPM(pl.LightningModule):
 def get_args():
     parser = argparse.ArgumentParser(description='ANOMALYDETECTION')
     parser.add_argument('--phase', choices=['train','test'], default='train')
-    parser.add_argument('--dataset_path', default=r'./MVTec') # 'D:\Dataset\mvtec_anomaly_detection')#
+    parser.add_argument('--dataset_path', default='../data/mvtec') # 'D:\Dataset\mvtec_anomaly_detection')#
     parser.add_argument('--category', default='hazelnut')
     parser.add_argument('--num_epochs', default=1)
-    parser.add_argument('--batch_size', default=32)
-    parser.add_argument('--load_size', default=256) # 256
-    parser.add_argument('--input_size', default=224)
-    parser.add_argument('--coreset_sampling_ratio', default=0.001)
+    parser.add_argument('--batch_size', default=32, type=int)
+    parser.add_argument('--load_size', default=256, type=int)
+    parser.add_argument('--input_size', default=224, type=int)
+    parser.add_argument('--coreset_sampling_ratio', default=0.001, type=float)
     parser.add_argument('--project_root_path', default=r'./test') # 'D:\Project_Train_Results\mvtec_anomaly_detection\210624\test') #
     parser.add_argument('--save_src_code', default=True)
     parser.add_argument('--save_anomaly_map', default=True)
     parser.add_argument('--n_neighbors', type=int, default=9)
+    parser.add_argument('--gpu', type=str, default='0')
     args = parser.parse_args()
     return args
 
 if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     args = get_args()
-    trainer = pl.Trainer.from_argparse_args(args, default_root_dir=os.path.join(args.project_root_path, args.category), max_epochs=args.num_epochs, gpus=1) #, check_val_every_n_epoch=args.val_freq,  num_sanity_val_steps=0) # ,fast_dev_run=True)
+    trainer = pl.Trainer.from_argparse_args(args, default_root_dir=os.path.join(args.project_root_path, args.category), max_epochs=args.num_epochs, gpus=args.gpu) #, check_val_every_n_epoch=args.val_freq,  num_sanity_val_steps=0) # ,fast_dev_run=True)
     model = STPM(hparams=args)
     if args.phase == 'train':
         trainer.fit(model)

@@ -354,13 +354,13 @@ class STPM(pl.LightningModule):
         self.embedding_list = []
     
     def on_test_start(self):
+        self.embedding_dir_path, self.sample_path, self.source_code_save_path = prep_dirs(self.logger.log_dir)
         self.index = faiss.read_index(os.path.join(self.embedding_dir_path,'index.faiss'))
         if torch.cuda.is_available():
             res = faiss.StandardGpuResources()
             self.index = faiss.index_cpu_to_gpu(res, 0 ,self.index)
         self.init_results_list()
-        self.embedding_dir_path, self.sample_path, self.source_code_save_path = prep_dirs(self.logger.log_dir)
-        
+
     def training_step(self, batch, batch_idx): # save locally aware patch features
         x, _ = batch
         features = self(x)
@@ -389,6 +389,33 @@ class STPM(pl.LightningModule):
         faiss.write_index(self.index,  os.path.join(self.embedding_dir_path,'index.faiss'))
 
 
+    # def test_step(self, batch, batch_idx): # Nearest Neighbour Search
+    #     x, label = batch
+    #     # extract embedding
+    #     features = self(x) # features[0]: [1, 512, 4, 4], features[1]: [1, 1024, 2, 2]
+    #     # import pdb; pdb.set_trace()
+    #     embeddings = []
+    #     # for feature in features:
+    #     #     m = torch.nn.AvgPool2d(3, 1, 1)
+    #     #     embeddings.append(m(feature))
+    #     for feature in features:
+    #         # m = torch.nn.AvgPool2d(3, 1, 1)
+    #         embeddings.append(feature)
+    #     # import pdb; pdb.set_trace()
+        
+    #     embedding_ = embedding_concat(embeddings[0], embeddings[1]) # embedding_: [1, 1536, 4, 4]
+    #     embedding_test = np.array(reshape_embedding(np.array(embedding_)))
+    #     score_patches, _ = self.index.search(embedding_test , k=args.n_neighbors) # [16, n_neighbors]
+    #     anomaly_map = score_patches
+    #     # anomaly_map = score_patches[:,0].reshape((28,28))
+    #     N_b = score_patches[np.argmax(score_patches[:,0])]
+    #     w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
+    #     score = w*max(score_patches[:,0]) # Image-level score
+
+    #     self.gt_list_img_lvl.append(label.cpu().numpy()[0])
+    #     self.pred_list_img_lvl.append(score)
+
+
     def test_step(self, batch, batch_idx): # Nearest Neighbour Search
         x, label = batch
         # extract embedding
@@ -399,8 +426,9 @@ class STPM(pl.LightningModule):
             embeddings.append(m(feature))
         embedding_ = embedding_concat(embeddings[0], embeddings[1])
         embedding_test = np.array(reshape_embedding(np.array(embedding_)))
-        score_patches, _ = self.index.search(embedding_test , k=args.n_neighbors)
-        anomaly_map = score_patches[:,0].reshape((28,28))
+        score_patches, _ = self.index.search(embedding_test , k=args.n_neighbors) # [16, n_neighbors]
+        anomaly_map = score_patches
+        # anomaly_map = score_patches[:,0].reshape((28,28))
         N_b = score_patches[np.argmax(score_patches[:,0])]
         w = (1 - (np.max(np.exp(N_b))/np.sum(np.exp(N_b))))
         score = w*max(score_patches[:,0]) # Image-level score
@@ -418,10 +446,11 @@ class STPM(pl.LightningModule):
         # self.save_anomaly_map(anomaly_map_resized_blur, input_x, gt_np*255, file_name[0], x_type[0])
 
     def test_epoch_end(self, outputs):
-        print("Total pixel-level auc-roc score :")
+        # print("Total pixel-level auc-roc score :")
         # pixel_auc = roc_auc_score(self.gt_list_px_lvl, self.pred_list_px_lvl)
         # print(pixel_auc)
         print("Total image-level auc-roc score :")
+        # self.pred_list_img_lvl = np.nan_to_num(self.pred_list_img_lvl,copy=False)
         img_auc = roc_auc_score(self.gt_list_img_lvl, self.pred_list_img_lvl)
         print(img_auc)
         print('test_epoch_end')
